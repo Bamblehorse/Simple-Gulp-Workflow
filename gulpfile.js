@@ -29,4 +29,5 @@ gulp.task('sass', function () {
 
 gulp.task('sass:watch', function () {
   gulp.watch('src/sass/**/*.scss', ['sass','refresh']);
+  gulp.watch('src/**/*.html', ['refresh']);
 });
