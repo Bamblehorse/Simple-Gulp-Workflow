@@ -1,4 +1,5 @@
 # Simple-Gulp-Workflow
+
 A simple Gulp workflow template using Browsersync for quick design prototyping and gulp-sass for bulk changes to css.
 
 ## Getting Started
