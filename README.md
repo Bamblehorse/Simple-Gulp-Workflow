@@ -2,6 +2,11 @@
 
 A simple Gulp workflow template using Browsersync for quick design prototyping and gulp-sass for bulk changes to css.
 
+## TODOS
+
+- [ ] Add Jade/Pug
+- [ ] Add SASS
+
 ## Getting Started
 Below you will find instructions for setting the project up on your local machine.
 
