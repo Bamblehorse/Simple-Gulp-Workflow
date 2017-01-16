@@ -4,8 +4,8 @@ A simple Gulp workflow template using Browsersync for quick design prototyping a
 
 ## TODOS
 
-- [ ] Add Jade/Pug
-- [ ] Add SASS
+- [ x ] Add Jade/Pug
+- [ x ] Add SASS
 
 ## Getting Started
 Below you will find instructions for setting the project up on your local machine.
