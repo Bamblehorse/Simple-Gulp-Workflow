@@ -2,10 +2,18 @@
 
 A simple Gulp workflow template using Browsersync for quick design prototyping and gulp-sass for bulk changes to css.
 
-## TODOS
+## Important to note
+This repo uses Gulp 4 and if you have gulp 3.9.x installed you may get the following error:
 
-- [ x ] Add Jade/Pug
-- [ x ] Add SASS
+```
+TypeError: Cannot read property 'apply' of undefined
+    at /usr/local/lib/node_modules/gulp/bin/gulp.js
+```
+At this point you need to update the gulp-cli as follows:
+```
+npm i -g gulp-cli
+```
+More info [here](https://github.com/gulpjs/gulp-cli/issues/84)
 
 ## Getting Started
 Below you will find instructions for setting the project up on your local machine.
