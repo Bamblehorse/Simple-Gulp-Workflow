@@ -1,37 +1,23 @@
+// Created By Jonathan Wood - github.com/JonathanDWood
 'use strict';
-
+    // Gulp
     import gulp from 'gulp';
-
+    // HTML
+    import pug from 'gulp-pug';
+    // CSS
 	  import sass from 'gulp-sass';
     import cssnano from 'gulp-cssnano';
     import sourcemaps from 'gulp-sourcemaps';
     import autoprefixer from 'gulp-autoprefixer';
-    import del from 'del';
-    import pug from 'gulp-pug';
-    import chalk from 'chalk';
+    // JS
     import babel from 'gulp-babel';
     import uglify from 'gulp-uglify';
+    // System Tools
+    import del from 'del';
+    import chalk from 'chalk';
     import plumber from 'gulp-plumber';
-	  import browserSync from 'browser-sync';
-
-gulp.task('default',['del','browserSync', 'watch'], () => {
-});
-
-gulp.task('del', () => {
-  del('dist').then(() => {
-    console.log(chalk.green('Dist folder deleted'));
-  });
-});
-
-gulp.task('build', gulp.series('del', 'unPugify', 'uglify', 'sass', function(done) {
-  console.log(chalk.green('Built Dist Folder'));
-  gulp.src('src/js/questions.json')
-    .pipe(gulp.dest('dist/js'));
-  gulp.src(['src/images/**', 'src/videos/**', 'src/js/questions.json'], { base: 'src/' })
-    .pipe(gulp.dest('dist'));
-  console.log(chalk.green('Moved files'));
-  done();
-}));
+    import pathExists from 'path-exists';
+    import browserSync from 'browser-sync';
 
 gulp.task('unPugify', () => {
   return gulp.src('src/pug/*.pug')
@@ -61,14 +47,6 @@ gulp.task('sass', () => {
     .pipe(gulp.dest('dist/css'));
 });
 
-gulp.task('babelify', () => {
-    return gulp.src('src/js/*.js')
-        .pipe(babel({
-            presets: ['es2015']
-        }))
-        .pipe(gulp.dest('dist'));
-});
-
 gulp.task('uglify', () => {
  return gulp.src('src/js/*.js')
     .pipe(plumber())
@@ -79,9 +57,48 @@ gulp.task('uglify', () => {
     .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('watch',  () => {
-  gulp.watch('src/sass/**/*.+(scss|sass)', ['sass', 'reload']); // useref
-  gulp.watch('dist/**/*.html', ['reload']);
-  gulp.watch('src/**/*.pug', ['unPugify']);
-  gulp.watch('src/js/*.js', ['uglify','reload']);
+gulp.task('watch', () => {
+  console.log(chalk.green('Watching Files'));
+  gulp.watch('src/sass/**/*.+(scss|sass)', gulp.series('sass', 'reload', (done) => {
+    done();
+  }));
+  gulp.watch('dist/**/*.html', gulp.series('reload', (done) => {
+    done();
+  }));
+  gulp.watch('src/**/*.pug',  gulp.series('unPugify', (done) => {
+    done();
+  }));
+  gulp.watch('src/js/*.js', gulp.series('uglify', 'reload', (done) => {
+    done();
+  }));
+});
+
+gulp.task('del', (done) => {
+  if (pathExists.sync('dist')) {
+      console.log(chalk.green('Dist Folder Exists'));
+      console.log(chalk.red('Deleting Dist Folder'));
+      done();
+      return del('dist', {force:true});
+  }
+  done();
+  return console.log(chalk.red('Dist Folder Not Found'));
+});
+
+gulp.task('preBuild', (done) => {
+  // Array of files to be moved
+  gulp.src(['src/images/**'], { base: 'src/' })
+    .pipe(gulp.dest('dist'));
+  console.log(chalk.green('Created Dist Folder'));
+  console.log(chalk.green('Moved files'));
+  console.log(chalk.green('Starting build'));
+  done();
+});
+
+// Convert Pug, JS, and SASS
+gulp.task('build', gulp.series('del','preBuild', gulp.parallel('unPugify', 'uglify', 'sass')), (done) => {
+  done();
+});
+
+gulp.task('default', gulp.series('build', gulp.parallel('watch','browserSync')), (done) => {
+  done();
 });
