@@ -52,10 +52,12 @@ gulp.task('sass', () => {
 gulp.task('uglify', () => {
  return gulp.src('src/js/*.js')
     .pipe(plumber())
+    .pipe(sourcemaps.init())
     .pipe(babel({
       presets: ['es2015']
     }))
     .pipe(uglify())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('dist/js'));
 });
 
