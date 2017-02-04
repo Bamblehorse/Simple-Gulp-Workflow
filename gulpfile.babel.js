@@ -1,28 +1,43 @@
-"use strict";
-/*jshint esversion:6 */
-const gulp = require('gulp'),
-    babel = require('gulp-babel'),
-	  sass = require('gulp-sass'),
-    pug = require('gulp-pug'),
-    uglify = require('gulp-uglify'),
-    plumber = require('gulp-plumber'),
-    useref = require('gulp-useref'),
-	  browserSync = require('browser-sync').create();
+'use strict';
 
-gulp.task('default',['browserSync', 'watch'], () => {
+    import gulp from 'gulp';
+
+	  import sass from 'gulp-sass';
+    import cssnano from 'gulp-cssnano';
+    import sourcemaps from 'gulp-sourcemaps';
+    import autoprefixer from 'gulp-autoprefixer';
+    import del from 'del';
+    import pug from 'gulp-pug';
+    import chalk from 'chalk';
+    import babel from 'gulp-babel';
+    import uglify from 'gulp-uglify';
+    import plumber from 'gulp-plumber';
+	  import browserSync from 'browser-sync';
+
+gulp.task('default',['del','browserSync', 'watch'], () => {
 });
+
+gulp.task('del', () => {
+  del('dist').then(() => {
+    console.log(chalk.green('Dist folder deleted'));
+  });
+});
+
+gulp.task('build', gulp.series('del', 'unPugify', 'uglify', 'sass', function(done) {
+  console.log(chalk.green('Built Dist Folder'));
+  gulp.src('src/js/questions.json')
+    .pipe(gulp.dest('dist/js'));
+  gulp.src(['src/images/**', 'src/videos/**', 'src/js/questions.json'], { base: 'src/' })
+    .pipe(gulp.dest('dist'));
+  console.log(chalk.green('Moved files'));
+  done();
+}));
 
 gulp.task('unPugify', () => {
   return gulp.src('src/pug/*.pug')
   .pipe(plumber())
   .pipe(pug({pretty: true}))
   .pipe(gulp.dest('dist/'));
-});
-
-gulp.task('useref', () =>{
-  return gulp.src('dist/*.html')
-    .pipe(useref())
-    .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('browserSync', () => {
@@ -33,7 +48,7 @@ gulp.task('browserSync', () => {
   });
 });
 
-gulp.task('refresh', () => {
+gulp.task('reload', () => {
 	return gulp
     .src('dist')
 	.pipe(browserSync.reload({stream: true}));
@@ -65,8 +80,8 @@ gulp.task('uglify', () => {
 });
 
 gulp.task('watch',  () => {
-  gulp.watch('src/sass/**/*.+(scss|sass)', ['sass', 'refresh']); // useref
-  gulp.watch('dist/**/*.html', ['refresh']);
+  gulp.watch('src/sass/**/*.+(scss|sass)', ['sass', 'reload']); // useref
+  gulp.watch('dist/**/*.html', ['reload']);
   gulp.watch('src/**/*.pug', ['unPugify']);
-  gulp.watch('src/js/*.js', ['uglify','refresh']);
+  gulp.watch('src/js/*.js', ['uglify','reload']);
 });
