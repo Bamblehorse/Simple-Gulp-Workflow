@@ -6,7 +6,6 @@
     import pug from 'gulp-pug';
     // CSS
 	  import sass from 'gulp-sass';
-    import cssnano from 'gulp-cssnano';
     import sourcemaps from 'gulp-sourcemaps';
     import autoprefixer from 'gulp-autoprefixer';
     // JS
@@ -43,7 +42,10 @@ gulp.task('reload', () => {
 gulp.task('sass', () => {
   return gulp.src('src/sass/**/*.+(scss|sass)')
     .pipe(plumber())
-    .pipe(sass().on('error', sass.logError))
+    .pipe(sourcemaps.init())
+    .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+    .pipe(autoprefixer())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('dist/css'));
 });
 
@@ -78,7 +80,7 @@ gulp.task('del', (done) => {
       console.log(chalk.green('Dist Folder Exists'));
       console.log(chalk.red('Deleting Dist Folder'));
       done();
-      return del('dist', {force:true});
+      return del.sync('dist', {force:true});
   }
   done();
   return console.log(chalk.red('Dist Folder Not Found'));
